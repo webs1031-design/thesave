@@ -56,19 +56,79 @@ const process = [
   },
 ];
 
-const regions = [
-  "서울",
-  "인천",
-  "수원",
-  "성남",
-  "용인",
-  "화성",
-  "평택",
-  "천안",
-  "아산",
-  "청주",
-  "대전",
-  "세종",
+const seoulRegions = [
+  "강남구",
+  "강동구",
+  "강북구",
+  "강서구",
+  "관악구",
+  "광진구",
+  "구로구",
+  "금천구",
+  "노원구",
+  "도봉구",
+  "동대문구",
+  "동작구",
+  "마포구",
+  "서대문구",
+  "서초구",
+  "성동구",
+  "성북구",
+  "송파구",
+  "양천구",
+  "영등포구",
+  "용산구",
+  "은평구",
+  "종로구",
+  "중구",
+  "중랑구",
+];
+
+const gyeonggiRegions = [
+  "가평군",
+  "고양시",
+  "과천시",
+  "광명시",
+  "광주시",
+  "구리시",
+  "군포시",
+  "김포시",
+  "남양주시",
+  "동두천시",
+  "부천시",
+  "성남시",
+  "수원시",
+  "시흥시",
+  "안산시",
+  "안성시",
+  "안양시",
+  "양주시",
+  "양평군",
+  "여주시",
+  "연천군",
+  "오산시",
+  "용인시",
+  "의왕시",
+  "의정부시",
+  "이천시",
+  "파주시",
+  "평택시",
+  "포천시",
+  "하남시",
+  "화성시",
+];
+
+const incheonRegions = [
+  "계양구",
+  "남동구",
+  "동구",
+  "미추홀구",
+  "부평구",
+  "서구",
+  "연수구",
+  "중구",
+  "강화군",
+  "옹진군",
 ];
 
 export default function Home() {
@@ -90,93 +150,204 @@ export default function Home() {
             <a href="#region">지역 철거</a>
           </nav>
 
-          <a className="header-cta" href="#contact">
+          <a className="header-cta" href="tel:01022698352">
             무료 견적 신청
           </a>
         </div>
       </header>
 
       {/* HERO */}
-      <section className="hero" id="top">
-        <div className="hero-grid" />
+      <section
+        id="top"
+        style={{
+          position: "relative",
+          minHeight: "760px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          overflow: "hidden",
+          backgroundImage: "url('/hero-demolition.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background:
+              "linear-gradient(90deg, rgba(0,0,0,.88), rgba(0,0,0,.60), rgba(0,0,0,.72))",
+          }}
+        />
 
-        <div className="container hero-inner">
-          <div className="hero-content">
-            <p className="eyebrow">
-              <span className="eyebrow-dot" />
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            opacity: 0.12,
+            backgroundImage:
+              "linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)",
+            backgroundSize: "70px 70px",
+          }}
+        />
+
+        <div
+          className="container"
+          style={{
+            position: "relative",
+            zIndex: 2,
+            width: "100%",
+            paddingTop: "100px",
+            paddingBottom: "100px",
+          }}
+        >
+          <div style={{ maxWidth: "920px" }}>
+            <p
+              style={{
+                marginBottom: "24px",
+                color: "#ffd600",
+                fontSize: "14px",
+                fontWeight: 900,
+                letterSpacing: "0.28em",
+              }}
+            >
               THE SAVE DEMOLITION
             </p>
 
-            <h1>
-              복잡한 철거,
+            <h1
+              style={{
+                margin: 0,
+                color: "#ffffff",
+                fontSize: "clamp(50px, 7vw, 92px)",
+                lineHeight: 1.04,
+                fontWeight: 900,
+                letterSpacing: "-0.065em",
+              }}
+            >
+              철거,
               <br />
-              <span>더세이브가</span>
+              잘못 선택하면
               <br />
-              제대로 시작합니다.
+              <span style={{ color: "#ffd600" }}>비용부터 달라집니다.</span>
             </h1>
 
-            <p className="hero-description">
-              상가철거부터 폐업철거, 부분철거, 원상복구까지.
-              <br className="desktop-only" />
-              현장 상황에 필요한 철거 범위를 확인하고 합리적인 방향을
-              안내합니다.
+            <p
+              style={{
+                marginTop: "34px",
+                maxWidth: "760px",
+                color: "#f1f1f1",
+                fontSize: "clamp(18px, 2vw, 24px)",
+                lineHeight: 1.8,
+                fontWeight: 600,
+              }}
+            >
+              더세이브 철거는 서울·경기·인천 지역의 상가철거, 점포철거,
+              매장철거, 폐업철거, 부분철거와 원상복구를 진행합니다.
             </p>
 
-            <div className="hero-actions">
-              <a className="button button-primary" href="#contact">
-                무료 견적 받아보기
-                <span>→</span>
+            <p
+              style={{
+                marginTop: "14px",
+                color: "#bbbbbb",
+                fontSize: "17px",
+                lineHeight: 1.8,
+                fontWeight: 600,
+              }}
+            >
+              현장 조건과 철거 범위를 먼저 확인하고 무료방문견적을
+              안내해드립니다.
+            </p>
+
+            <a
+              href="tel:01022698352"
+              style={{
+                display: "inline-block",
+                marginTop: "38px",
+                color: "#ffffff",
+                fontSize: "clamp(38px, 5vw, 66px)",
+                lineHeight: 1,
+                fontWeight: 900,
+                letterSpacing: "-0.045em",
+                textDecoration: "none",
+              }}
+            >
+              ☎ 010-2269-8352
+            </a>
+
+            <div
+              style={{
+                marginTop: "34px",
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "14px",
+              }}
+            >
+              <a
+                href="tel:01022698352"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: "20px 32px",
+                  background: "#ffd600",
+                  color: "#000000",
+                  fontSize: "17px",
+                  fontWeight: 900,
+                  textDecoration: "none",
+                }}
+              >
+                무료방문견적 전화하기
+                <span style={{ marginLeft: "18px" }}>→</span>
               </a>
 
-              <a className="button button-outline" href="#service">
-                서비스 알아보기
+              <a
+                href="#region"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: "20px 32px",
+                  border: "1px solid rgba(255,255,255,.4)",
+                  background: "rgba(0,0,0,.35)",
+                  color: "#ffffff",
+                  fontSize: "17px",
+                  fontWeight: 800,
+                  textDecoration: "none",
+                }}
+              >
+                지역별 철거 보기
               </a>
-            </div>
-
-            <div className="hero-points">
-              <div>
-                <strong>전국</strong>
-                <span>지역 상담</span>
-              </div>
-              <div>
-                <strong>1:1</strong>
-                <span>현장 맞춤 상담</span>
-              </div>
-              <div>
-                <strong>ONE-STOP</strong>
-                <span>철거 · 원상복구</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="hero-visual" aria-hidden="true">
-            <div className="hero-number">01</div>
-
-            <div className="hero-visual-card">
-              <span>DEMOLITION</span>
-              <strong>
-                철거의 시작부터
-                <br />
-                마무리까지.
-              </strong>
-              <div className="yellow-line" />
-            </div>
-
-            <div className="hero-circle hero-circle-one" />
-            <div className="hero-circle hero-circle-two" />
-
-            <div className="hero-label">
-              <span>THE SAVE</span>
-              <span>2026</span>
             </div>
           </div>
         </div>
 
-        <div className="hero-bottom-bar">
-          <div className="container hero-bottom-inner">
-            <span>SCROLL TO EXPLORE</span>
-            <div />
-            <span>상가 · 폐업 · 부분 · 원상복구</span>
+        <div
+          style={{
+            position: "absolute",
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 2,
+            borderTop: "1px solid rgba(255,255,255,.2)",
+            background: "rgba(0,0,0,.52)",
+          }}
+        >
+          <div
+            className="container"
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              gap: "20px",
+              paddingTop: "20px",
+              paddingBottom: "20px",
+              color: "#dddddd",
+              fontSize: "13px",
+              fontWeight: 700,
+              letterSpacing: "0.08em",
+            }}
+          >
+            <span>SEOUL · GYEONGGI · INCHEON</span>
+            <span>상가철거 · 매장철거 · 폐업철거 · 원상복구</span>
           </div>
         </div>
       </section>
@@ -187,6 +358,7 @@ export default function Home() {
           <div className="intro-heading">
             <div>
               <p className="section-kicker">THE SAVE STANDARD</p>
+
               <h2>
                 철거는 단순히
                 <br />
@@ -199,6 +371,7 @@ export default function Home() {
                 같은 평수의 매장이라도 천장 구조, 바닥 상태, 폐기물 양,
                 장비 진입 여부에 따라 철거 방식과 비용은 달라집니다.
               </p>
+
               <p>
                 더세이브는 현장의 조건을 먼저 확인하고 필요한 작업 범위를
                 기준으로 철거 방향을 안내합니다.
@@ -227,10 +400,10 @@ export default function Home() {
 
             <article className="trust-card trust-card-yellow">
               <span>03</span>
-              <strong>지역별 상담</strong>
+              <strong>서울 · 경기 · 인천</strong>
               <p>
-                전국 주요 지역의 철거 정보를 확인하고 지역별 상담을 요청할
-                수 있습니다.
+                서울, 경기, 인천 지역의 철거 정보를 확인하고 지역별 상담을
+                요청할 수 있습니다.
               </p>
             </article>
           </div>
@@ -243,6 +416,7 @@ export default function Home() {
           <div className="section-title-row">
             <div>
               <p className="section-kicker yellow-text">SERVICE</p>
+
               <h2>
                 필요한 철거만
                 <br />
@@ -304,6 +478,7 @@ export default function Home() {
 
               <div>
                 <p className="why-label">CHECK THE SITE</p>
+
                 <h3>
                   작업 전
                   <br />
@@ -352,6 +527,7 @@ export default function Home() {
           <div className="section-title-row">
             <div>
               <p className="section-kicker">PROCESS</p>
+
               <h2>
                 상담부터 철거까지
                 <br />
@@ -387,112 +563,330 @@ export default function Home() {
       </section>
 
       {/* REGION */}
-      <section className="section region-section" id="region">
+      <section
+        id="region"
+        style={{
+          background: "#080808",
+          padding: "100px 0",
+          color: "#ffffff",
+        }}
+      >
         <div className="container">
-          <div className="region-header">
-            <div>
-              <p className="section-kicker yellow-text">REGIONAL SERVICE</p>
-              <h2>
-                우리 지역 철거,
-                <br />
-                지역별로 확인하세요.
-              </h2>
-            </div>
-
-            <p>
-              지역별 철거 정보 페이지를 순차적으로 제공합니다.
-              <br />
-              원하는 지역의 철거 정보를 확인해보세요.
-            </p>
-          </div>
-
-          <div className="region-grid">
-            {regions.map((region) => (
-              <a href="#contact" className="region-link" key={region}>
-                <span>{region}</span>
-                <strong>{region} 철거</strong>
-                <span className="region-arrow">→</span>
-              </a>
-            ))}
-          </div>
-
-          <p className="region-notice">
-            * 지역별 상세 페이지는 이후 SEO 구조에 맞춰 연결됩니다.
+          <p
+            style={{
+              marginBottom: "18px",
+              color: "#ffd600",
+              fontSize: "13px",
+              fontWeight: 900,
+              letterSpacing: "0.25em",
+            }}
+          >
+            REGIONAL SERVICE
           </p>
+
+          <h2
+            style={{
+              margin: 0,
+              fontSize: "clamp(40px,5vw,68px)",
+              lineHeight: 1.04,
+              fontWeight: 900,
+              letterSpacing: "-0.055em",
+            }}
+          >
+            우리 지역 철거,
+            <br />
+            지역별로 확인하세요.
+          </h2>
+
+          <p
+            style={{
+              marginTop: "25px",
+              color: "#aaaaaa",
+              fontSize: "17px",
+              lineHeight: 1.8,
+            }}
+          >
+            서울 · 경기 · 인천을 선택하면 해당 지역의 시·구별 철거
+            페이지를 확인할 수 있습니다.
+          </p>
+
+          <div
+            style={{
+              marginTop: "60px",
+              borderTop: "1px solid #333333",
+            }}
+          >
+            {/* 서울 */}
+            <details>
+              <summary
+                style={{
+                  cursor: "pointer",
+                  listStyle: "none",
+                  padding: "35px 10px",
+                  borderBottom: "1px solid #333333",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  fontSize: "clamp(28px,4vw,50px)",
+                  fontWeight: 900,
+                }}
+              >
+                <span>서울 철거</span>
+                <span style={{ color: "#ffd600" }}>+</span>
+              </summary>
+
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns:
+                    "repeat(auto-fit,minmax(180px,1fr))",
+                  gap: "1px",
+                  background: "#333333",
+                }}
+              >
+                {seoulRegions.map((region) => (
+                  <a
+                    key={region}
+                    href={`/서울/${region}`}
+                    style={{
+                      minHeight: "130px",
+                      padding: "24px",
+                      background: "#111111",
+                      color: "#ffffff",
+                      textDecoration: "none",
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <span
+                      style={{
+                        color: "#777777",
+                        fontSize: "12px",
+                      }}
+                    >
+                      서울
+                    </span>
+
+                    <strong style={{ fontSize: "20px" }}>
+                      {region} 철거업체
+                    </strong>
+
+                    <span style={{ color: "#ffd600" }}>→</span>
+                  </a>
+                ))}
+              </div>
+            </details>
+
+            {/* 경기 */}
+            <details>
+              <summary
+                style={{
+                  cursor: "pointer",
+                  listStyle: "none",
+                  padding: "35px 10px",
+                  borderBottom: "1px solid #333333",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  fontSize: "clamp(28px,4vw,50px)",
+                  fontWeight: 900,
+                }}
+              >
+                <span>경기 철거</span>
+                <span style={{ color: "#ffd600" }}>+</span>
+              </summary>
+
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns:
+                    "repeat(auto-fit,minmax(180px,1fr))",
+                  gap: "1px",
+                  background: "#333333",
+                }}
+              >
+                {gyeonggiRegions.map((region) => (
+                  <a
+                    key={region}
+                    href={`/경기/${region}`}
+                    style={{
+                      minHeight: "130px",
+                      padding: "24px",
+                      background: "#111111",
+                      color: "#ffffff",
+                      textDecoration: "none",
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <span
+                      style={{
+                        color: "#777777",
+                        fontSize: "12px",
+                      }}
+                    >
+                      경기
+                    </span>
+
+                    <strong style={{ fontSize: "20px" }}>
+                      {region} 철거업체
+                    </strong>
+
+                    <span style={{ color: "#ffd600" }}>→</span>
+                  </a>
+                ))}
+              </div>
+            </details>
+
+            {/* 인천 */}
+            <details>
+              <summary
+                style={{
+                  cursor: "pointer",
+                  listStyle: "none",
+                  padding: "35px 10px",
+                  borderBottom: "1px solid #333333",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  fontSize: "clamp(28px,4vw,50px)",
+                  fontWeight: 900,
+                }}
+              >
+                <span>인천 철거</span>
+                <span style={{ color: "#ffd600" }}>+</span>
+              </summary>
+
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns:
+                    "repeat(auto-fit,minmax(180px,1fr))",
+                  gap: "1px",
+                  background: "#333333",
+                }}
+              >
+                {incheonRegions.map((region) => (
+                  <a
+                    key={region}
+                    href={`/인천/${region}`}
+                    style={{
+                      minHeight: "130px",
+                      padding: "24px",
+                      background: "#111111",
+                      color: "#ffffff",
+                      textDecoration: "none",
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <span
+                      style={{
+                        color: "#777777",
+                        fontSize: "12px",
+                      }}
+                    >
+                      인천
+                    </span>
+
+                    <strong style={{ fontSize: "20px" }}>
+                      {region} 철거업체
+                    </strong>
+
+                    <span style={{ color: "#ffd600" }}>→</span>
+                  </a>
+                ))}
+              </div>
+            </details>
+          </div>
         </div>
       </section>
 
       {/* CONTACT */}
       <section className="contact-section" id="contact">
-        <div className="container contact-grid">
-          <div className="contact-copy">
+        <div className="container">
+          <div
+            style={{
+              minHeight: "580px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              textAlign: "center",
+            }}
+          >
             <p className="section-kicker">FREE ESTIMATE</p>
 
-            <h2>
-              철거 견적,
-              <br />
-              어렵게 알아보지 마세요.
+            <h2
+              style={{
+                marginTop: "20px",
+                fontSize: "clamp(48px,7vw,92px)",
+                lineHeight: 0.95,
+                fontWeight: 900,
+                letterSpacing: "-0.06em",
+              }}
+            >
+              무료방문견적
             </h2>
 
-            <p>
-              지역과 업종, 예상 평수 정도만 알려주셔도
+            <p
+              style={{
+                marginTop: "28px",
+                fontSize: "18px",
+                fontWeight: 600,
+                lineHeight: 1.8,
+              }}
+            >
+              상가철거 · 매장철거 · 점포철거 · 폐업철거 · 원상복구
               <br />
-              상담을 시작할 수 있습니다.
+              철거 상담이 필요하시면 편하게 전화주세요.
             </p>
 
-            <div className="contact-small">
+            <a
+              href="tel:01022698352"
+              aria-label="010-2269-8352 무료 철거 견적 전화 상담"
+              style={{
+                display: "inline-block",
+                marginTop: "38px",
+                color: "#000000",
+                fontSize: "clamp(42px,6vw,80px)",
+                fontWeight: 900,
+                lineHeight: 1,
+                letterSpacing: "-0.05em",
+                textDecoration: "none",
+              }}
+            >
+              010-2269-8352
+            </a>
+
+            <a
+              href="tel:01022698352"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "18px",
+                marginTop: "32px",
+                padding: "20px 40px",
+                background: "#080808",
+                color: "#ffffff",
+                fontSize: "18px",
+                fontWeight: 900,
+                textDecoration: "none",
+              }}
+            >
+              전화 상담하기
+              <span style={{ color: "#ffd600" }}>→</span>
+            </a>
+
+            <div className="contact-small" style={{ marginTop: "45px" }}>
               THE SAVE
               <br />
               DEMOLITION SERVICE
             </div>
-          </div>
-
-          <div className="estimate-card">
-            <div className="estimate-title">
-              <span>무료 견적 상담</span>
-              <strong>01</strong>
-            </div>
-
-            <div className="form-row">
-              <label htmlFor="name">이름</label>
-              <input id="name" type="text" placeholder="성함을 입력해주세요" />
-            </div>
-
-            <div className="form-row">
-              <label htmlFor="phone">연락처</label>
-              <input
-                id="phone"
-                type="tel"
-                placeholder="연락처를 입력해주세요"
-              />
-            </div>
-
-            <div className="form-row">
-              <label htmlFor="region-input">철거 지역</label>
-              <input
-                id="region-input"
-                type="text"
-                placeholder="예: 천안시 서북구"
-              />
-            </div>
-
-            <div className="form-row">
-              <label htmlFor="business">업종 / 공간</label>
-              <input
-                id="business"
-                type="text"
-                placeholder="예: 음식점 / 약 30평"
-              />
-            </div>
-
-            <button className="submit-button" type="button">
-              무료 견적 신청하기
-              <span>→</span>
-            </button>
-
-            <p className="form-notice">
-              상담 접수 기능은 Supabase 연결 후 활성화됩니다.
-            </p>
           </div>
         </div>
       </section>
@@ -510,16 +904,13 @@ export default function Home() {
               <a href="#service">철거 서비스</a>
               <a href="#process">진행 절차</a>
               <a href="#region">지역 철거 정보</a>
-              <a href="#contact">무료 견적</a>
+              <a href="tel:01022698352">무료 견적</a>
             </div>
           </div>
 
           <div className="footer-bottom">
             <div>
-              <p>
-                사업자 정보 · 주소 · 고객센터 정보는 실제 정보 확인 후
-                입력합니다.
-              </p>
+              <p>서울 · 경기 · 인천 철거 전문 더세이브</p>
               <p>© THE SAVE. All rights reserved.</p>
             </div>
 
@@ -528,8 +919,13 @@ export default function Home() {
         </div>
       </footer>
 
-      <a className="floating-contact" href="#contact">
-        <span>무료</span>
+      {/* FLOATING PHONE BUTTON */}
+      <a
+        className="floating-contact"
+        href="tel:01022698352"
+        aria-label="무료 철거 견적 전화 상담"
+      >
+        <span>전화</span>
         <strong>견적</strong>
       </a>
     </main>
