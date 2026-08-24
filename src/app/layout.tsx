@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.thesavecompany.com"),
+
   title: {
     default: "더세이브 철거 | 상가철거·폐업철거·원상복구 전문",
     template: "%s | 더세이브 철거",
@@ -35,9 +37,27 @@ export const metadata: Metadata = {
     title: "더세이브 철거",
     description:
       "상가철거부터 폐업철거, 원상복구까지 현장에 필요한 철거 서비스를 확인하세요.",
+    url: "https://www.thesavecompany.com",
     type: "website",
     locale: "ko_KR",
     siteName: "더세이브 철거",
+
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1536,
+        height: 1024,
+        alt: "더세이브 철거 010-2269-8352",
+      },
+    ],
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "더세이브 철거",
+    description:
+      "상가철거부터 폐업철거, 원상복구까지 현장에 필요한 철거 서비스를 확인하세요.",
+    images: ["/og-image.png"],
   },
 };
 
