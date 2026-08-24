@@ -33,6 +33,13 @@ export const metadata: Metadata = {
     follow: true,
   },
 
+  verification: {
+    other: {
+      "naver-site-verification":
+        "95fe59f444f5e31fe093ffc8cf3cde89c2fb98c7",
+    },
+  },
+
   openGraph: {
     title: "더세이브 철거",
     description:
