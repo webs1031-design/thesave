@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-
 import EstimateBanner from "../../components/EstimateBanner";
 
 import {
@@ -18,18 +17,20 @@ type PageProps = {
 };
 
 /* =========================================================
-   지역별 고유 콘텐츠 생성
+   지역별 고정 콘텐츠 생성
+   - 같은 지역은 항상 같은 문장
+   - 지역이 달라지면 문장 조합도 달라짐
 ========================================================= */
 
-function stableHash(value: string): number {
-  let hash = 2166136261;
+function stableHash(value: string) {
+  let hash = 0;
 
   for (let i = 0; i < value.length; i += 1) {
-    hash ^= value.charCodeAt(i);
-    hash = Math.imul(hash, 16777619);
+    hash =
+      (hash * 31 + value.charCodeAt(i)) >>> 0;
   }
 
-  return Math.abs(hash >>> 0);
+  return hash;
 }
 
 function pick<T>(
@@ -38,253 +39,111 @@ function pick<T>(
   offset = 0
 ): T {
   return items[
-    (seed + offset * 7919) %
-      items.length
+    (seed + offset) % items.length
   ];
 }
 
-function buildRegionalCopy(
-  city: string
-) {
-  const seed =
-    stableHash(
-      `the-save-demolition-${city}`
-    );
+function buildCityContent(city: string) {
+  const seed = stableHash(city);
 
   const heroDescriptions = [
-    `${city} 지역에서 철거를 준비하고 있다면 공간의 면적뿐 아니라 내부 구조와 기존 시설물, 폐기물 반출 조건을 함께 확인하는 것이 중요합니다. 점포와 매장, 상가, 사무실 등 현장에 필요한 철거 범위를 먼저 살펴보세요.`,
+    `${city}에서 점포나 매장의 철거를 준비하고 있다면 내부 구조와 기존 시설물, 폐기물 반출 조건을 먼저 살펴보는 것이 좋습니다. 철거 범위와 원상복구 항목을 구분하면 현장에 필요한 작업을 보다 구체적으로 확인할 수 있습니다.`,
 
-    `${city} 철거는 같은 규모의 공간이라도 업종과 기존 인테리어 상태에 따라 필요한 작업이 달라질 수 있습니다. 전체철거인지 부분철거인지, 폐업 후 원상복구까지 필요한지 현장 기준으로 확인하는 것이 좋습니다.`,
+    `${city} 지역의 상가, 매장, 사무실 철거는 공간의 크기뿐 아니라 천장과 바닥 마감, 가벽, 집기, 설비 상태에 따라 작업 내용이 달라질 수 있습니다. 현장을 기준으로 철거 대상과 유지할 시설을 구분하는 과정이 중요합니다.`,
 
-    `${city}에서 점포나 매장 철거를 계획하고 있다면 천장과 바닥, 벽체, 집기, 설비 가운데 실제 제거할 시설물을 먼저 구분해야 합니다. 건물의 작업 조건과 폐기물 이동 동선도 함께 살펴보는 것이 중요합니다.`,
+    `${city}에서 폐업철거나 원상복구를 알아볼 때에는 임대차 계약 조건과 현재 매장 상태를 함께 확인해야 합니다. 철거해야 하는 시설과 남겨야 하는 시설을 미리 정리하면 작업 범위를 판단하는 데 도움이 됩니다.`,
 
-    `${city} 상가철거와 폐업철거는 내부 구조뿐 아니라 임대차 계약 조건과 현장 환경에 따라서도 작업 범위가 달라질 수 있습니다. 철거와 함께 원상복구가 필요한지도 미리 확인하는 것이 좋습니다.`,
+    `${city} 철거 현장은 업종과 건물 구조에 따라 필요한 작업 방식이 달라질 수 있습니다. 점포철거부터 매장철거, 부분철거와 원상복구까지 현장 조건을 먼저 확인한 뒤 작업 범위를 정하는 것이 좋습니다.`,
 
-    `${city} 철거 현장은 층수와 출입 환경, 엘리베이터 사용 여부, 차량 접근성 등에 따라 필요한 작업 방식이 달라질 수 있습니다. 실제 공간의 조건을 기준으로 철거 범위를 확인하는 것이 중요합니다.`,
+    `${city} 지역에서 철거를 계획하고 있다면 단순히 평수만으로 판단하기보다 내부 마감재와 시설물, 작업 동선, 폐기물 반출 환경까지 함께 확인할 필요가 있습니다. 현장 조건에 맞는 철거 범위를 정하는 것이 우선입니다.`,
   ] as const;
 
-  const heroSubTitles = [
-    "점포·매장·상가철거",
-    "철거부터 원상복구까지",
-    "상가·사무실 철거 상담",
-    "폐업철거와 원상복구",
-    "현장에 맞는 철거 진행",
+  const guideTitles = [
+    `${city} 철거 전 확인할 사항`,
+    `${city} 철거 준비 가이드`,
+    `${city} 철거 현장 체크사항`,
+    `${city} 철거를 준비한다면`,
+    `${city} 철거 범위 확인하기`,
   ] as const;
 
-  const serviceIntros = [
-    `${city} 지역의 상가와 점포, 매장, 사무실은 공간의 구조와 기존 시설물이 서로 다르기 때문에 현장 상태를 기준으로 필요한 철거 범위를 확인하는 것이 중요합니다.`,
+  const introTexts = [
+    `철거는 같은 면적의 공간이라도 업종과 내부 시설에 따라 작업 범위가 달라집니다. ${city} 현장의 구조와 철거 대상부터 확인해보세요.`,
 
-    `철거 대상 공간의 업종과 내부 구조, 마감재와 폐기물의 종류에 따라 필요한 작업 범위와 진행 방법은 달라질 수 있습니다.`,
+    `${city} 철거를 준비할 때에는 공간의 면적뿐 아니라 기존 시설과 마감 상태, 폐기물 반출 조건까지 함께 살펴보는 것이 중요합니다.`,
 
-    `철거는 단순히 공간의 평수만으로 작업 내용을 판단하기 어렵습니다. 천장과 바닥, 벽체, 집기와 설비 등 실제 철거 대상을 함께 확인해야 합니다.`,
+    `점포와 매장, 사무실은 각각 철거해야 하는 시설이 다를 수 있습니다. ${city} 현장의 현재 상태를 기준으로 필요한 작업을 구분해보세요.`,
 
-    `전체철거와 부분철거, 폐업철거, 원상복구 가운데 어떤 작업이 필요한지에 따라 준비해야 할 내용도 달라질 수 있습니다.`,
+    `${city}에서 철거를 알아보고 있다면 전체철거가 필요한지, 일부 시설만 철거하면 되는지부터 확인하는 것이 좋습니다.`,
 
-    `${city} 철거를 계획한다면 현장 내부 시설물과 작업 환경을 먼저 확인하여 필요한 공정과 철거 범위를 구체적으로 정하는 것이 좋습니다.`,
+    `철거 범위를 정확히 정하면 불필요한 작업을 줄이고 원상복구가 필요한 부분도 함께 확인할 수 있습니다.`,
   ] as const;
 
-  const regionDescriptions = [
-    `${city}의 세부 지역을 선택하면 해당 지역의 철거업체, 점포철거, 매장철거, 상가철거, 폐업철거 및 원상복구 관련 정보를 확인할 수 있습니다.`,
+  const seoParagraph1 = [
+    `${city} 철거업체를 알아볼 때 가장 먼저 확인할 부분은 실제 철거가 필요한 범위입니다. 같은 평수의 상가라도 천장 마감, 바닥재, 가벽, 전기시설, 집기와 주방설비 등의 상태에 따라 작업 내용은 달라질 수 있습니다. 따라서 면적만으로 철거 범위를 판단하기보다 현재 공간의 구조를 기준으로 확인하는 것이 좋습니다.`,
 
-    `${city} 안에서도 지역과 건물 형태에 따라 철거 현장의 조건은 달라질 수 있습니다. 아래 지역을 선택하여 세부 철거 정보를 확인하세요.`,
+    `${city}에서 철거업체를 찾고 있다면 현장 내부에 어떤 시설이 남아 있는지부터 살펴볼 필요가 있습니다. 천장과 벽체, 바닥, 가벽, 간판, 집기처럼 철거 대상이 많을수록 작업 방식과 폐기물의 종류도 달라질 수 있기 때문에 실제 현장 조건을 함께 확인하는 것이 중요합니다.`,
 
-    `철거가 필요한 ${city} 지역을 선택하면 점포와 매장, 상가, 사무실 철거 및 폐업 후 원상복구에 대한 지역별 정보를 확인할 수 있습니다.`,
-
-    `아래 ${city} 세부 지역을 통해 각 지역의 철거업체와 점포철거, 매장철거, 상가철거, 폐업철거 정보를 확인할 수 있습니다.`,
-
-    `${city} 지역별 철거 정보를 확인하려면 아래 지역을 선택하세요. 각 지역의 상가와 매장, 점포 철거 및 원상복구 관련 안내를 확인할 수 있습니다.`,
+    `${city} 철거는 건물의 용도와 기존 인테리어 상태에 따라 필요한 작업이 달라집니다. 음식점과 카페처럼 주방시설이 있는 공간과 일반 사무실, 판매점은 철거 대상 자체가 다르기 때문에 업종과 내부 구조를 기준으로 작업 범위를 구분하는 것이 좋습니다.`,
   ] as const;
 
-  const seo1 = [
-    `${city} 철거업체를 알아볼 때에는 단순히 공간의 면적만 확인하기보다 내부 구조와 철거 대상의 종류를 함께 살펴보는 것이 중요합니다. 같은 규모의 공간이라도 천장과 바닥, 가벽, 집기, 설비의 구성에 따라 필요한 철거 공정은 달라질 수 있습니다.`,
+  const seoParagraph2 = [
+    `${city} 점포철거업체나 ${city} 매장철거업체를 알아보는 경우에는 영업 공간에 설치된 기존 시설 가운데 철거할 부분과 유지할 부분을 먼저 나누는 것이 좋습니다. 전체 내부를 철거해야 하는 현장도 있지만 바닥이나 가벽, 집기 등 일부 시설만 제거하는 부분철거가 필요한 경우도 있습니다.`,
 
-    `${city}에서 철거를 계획하고 있다면 현재 공간의 상태와 철거 목적을 먼저 확인하는 것이 좋습니다. 이전이나 리뉴얼을 위한 부분철거인지, 폐업 후 전체철거인지에 따라 필요한 작업 내용이 달라질 수 있기 때문입니다.`,
+    `${city} 점포철거와 매장철거는 폐업, 이전, 리모델링 등 철거 목적에 따라 범위가 달라질 수 있습니다. 기존 시설을 모두 철거해야 하는지 또는 새로운 인테리어를 위해 일부만 제거하면 되는지를 확인하면 필요한 작업 방향을 정하는 데 도움이 됩니다.`,
 
-    `${city} 지역에서 철거업체를 찾는 경우 천장과 벽체, 바닥, 집기와 설비 가운데 어떤 시설물을 제거해야 하는지 먼저 구분하는 것이 중요합니다. 철거 대상이 명확할수록 작업 범위를 보다 구체적으로 확인할 수 있습니다.`,
-
-    `${city} 철거는 공간의 평수만으로 작업 내용을 판단하기 어렵습니다. 기존 인테리어 상태와 시설물, 폐기물 발생량, 건물의 작업 환경을 함께 확인하는 것이 좋습니다.`,
-
-    `${city}에서 점포나 매장 철거를 준비한다면 철거할 시설과 유지할 시설을 먼저 구분하는 것이 중요합니다. 현장 구조와 작업 범위를 함께 살펴보면 필요한 공정을 정하는 데 도움이 됩니다.`,
+    `${city} 매장철거를 준비한다면 간판과 집기뿐 아니라 천장, 바닥, 가벽 및 내부 설비의 처리 여부도 확인해야 합니다. 점포의 현재 상태와 이후 공간 사용 계획에 따라 전체철거와 부분철거 가운데 필요한 범위를 판단할 수 있습니다.`,
   ] as const;
 
-  const seo2 = [
-    `${city} 점포철거업체를 알아보는 경우에는 가벽과 바닥, 천장, 집기, 간판 등 기존 시설물 가운데 철거가 필요한 항목을 확인해야 합니다. 점포 이전이나 폐업 목적에 따라서도 필요한 철거 범위는 달라질 수 있습니다.`,
+  const seoParagraph3 = [
+    `${city} 상가철거나 ${city} 폐업철거에서는 원상복구 조건도 중요한 확인 항목입니다. 임대차 계약에 따라 기존 인테리어를 어느 수준까지 철거해야 하는지가 달라질 수 있으므로 임대인과 협의된 내용을 기준으로 작업 범위를 확인하는 것이 좋습니다.`,
 
-    `${city} 매장철거업체를 찾는다면 진열시설과 카운터, 바닥재, 벽면 마감, 천장 구조 등 기존 인테리어 상태를 먼저 확인하는 것이 좋습니다. 리뉴얼을 위한 부분철거라면 유지해야 할 시설도 함께 구분해야 합니다.`,
+    `${city}에서 폐업철거를 진행하는 경우에는 영업 종료 일정과 함께 임대차 계약상의 원상복구 범위를 확인할 필요가 있습니다. 계약 당시의 공간 상태와 임대인이 요구하는 복구 기준을 살펴보면 철거가 필요한 부분을 보다 명확하게 구분할 수 있습니다.`,
 
-    `${city} 점포철거나 매장철거는 업종과 내부 시설물 구성에 따라 필요한 작업이 달라질 수 있습니다. 음식점과 카페, 소매점, 사무공간 등 공간의 용도를 기준으로 철거 대상을 확인하는 것이 중요합니다.`,
-
-    `점포나 매장을 정리할 때에는 내부 마감재뿐 아니라 집기와 간판, 주방시설, 각종 설비의 철거 여부도 함께 확인해야 합니다. ${city} 현장의 현재 상태를 기준으로 필요한 범위를 정하는 것이 좋습니다.`,
-
-    `${city}의 매장과 점포는 각 공간마다 기존 시설물과 인테리어 구성이 다릅니다. 전체철거인지 부분철거인지 확인한 뒤 실제 필요한 철거 항목을 살펴보는 것이 중요합니다.`,
+    `${city} 상가의 원상복구는 모든 시설을 무조건 철거하는 방식으로 진행되는 것은 아닙니다. 계약 조건이나 임대인의 요청에 따라 유지해야 하는 시설이 있을 수 있으므로 철거 전 복구 범위를 확인하는 과정이 필요합니다.`,
   ] as const;
 
-  const seo3 = [
-    `${city} 상가철거를 준비한다면 건물의 출입 조건과 작업 가능 시간, 폐기물 이동 경로를 함께 확인해야 합니다. 상가마다 공용부 이용 기준이나 관리 규정이 다를 수 있으므로 작업 전에 확인하는 것이 좋습니다.`,
+  const seoParagraph4 = [
+    `${city} 철거비용은 공간의 면적만으로 동일하게 정해지기 어렵습니다. 내부 마감재의 종류와 철거량, 폐기물의 양, 작업 층수, 엘리베이터 사용 여부, 차량과 장비의 접근 조건 등 여러 현장 요소가 작업 난이도에 영향을 줄 수 있습니다.`,
 
-    `${city} 상가철거업체를 알아볼 때에는 내부 시설물뿐 아니라 엘리베이터, 주차 공간, 차량 접근성 등 건물의 작업 환경도 함께 살펴보는 것이 중요합니다.`,
+    `${city} 철거견적을 확인할 때에는 평수와 함께 실제 작업 환경을 살펴봐야 합니다. 폐기물을 건물 밖으로 이동하는 거리, 엘리베이터 이용 가능 여부, 차량 진입 조건과 철거 대상 시설의 종류 등에 따라 필요한 작업 인력과 방식이 달라질 수 있습니다.`,
 
-    `상가 내부 철거는 기존 마감재와 설비의 종류에 따라 작업 내용이 달라질 수 있습니다. ${city} 현장의 바닥과 벽체, 천장 및 시설물 상태를 기준으로 철거 범위를 정하는 것이 좋습니다.`,
-
-    `${city} 상가철거는 폐기물을 이동할 수 있는 동선과 장비 진입 조건에 따라서도 작업 방식이 달라질 수 있습니다. 실제 건물 환경을 확인하여 철거 계획을 세우는 것이 중요합니다.`,
-
-    `상가철거를 진행할 때에는 철거 대상뿐 아니라 작업 시간과 공용 공간 사용 여부, 폐기물 적재 위치까지 함께 확인하는 것이 좋습니다. ${city} 지역에서도 현장별 조건은 서로 다를 수 있습니다.`,
+    `${city} 철거 현장은 건물마다 작업 조건이 다르기 때문에 단순 면적만으로 비용을 판단하기에는 한계가 있습니다. 철거 대상의 양과 종류, 폐기물 반출 동선, 장비 사용 가능 여부와 작업 시간 등의 조건을 함께 확인하는 것이 좋습니다.`,
   ] as const;
 
-  const seo4 = [
-    `${city} 폐업철거를 준비하고 있다면 임대차 계약상의 원상복구 조건도 함께 확인하는 것이 중요합니다. 내부 시설물을 철거하는 것과 별도로 바닥이나 벽면, 천장을 복구해야 하는 경우가 있을 수 있습니다.`,
+  const seoParagraph5 = [
+    `더세이브는 ${city} 지역에서 점포철거, 매장철거, 상가철거, 폐업철거, 부분철거 및 원상복구를 알아보는 경우 현장의 현재 상태와 필요한 철거 범위를 확인하여 진행 방향을 안내합니다.`,
 
-    `폐업 후 임대 공간을 반환해야 한다면 철거 범위와 원상복구 범위를 구분하여 확인하는 것이 좋습니다. ${city} 현장의 계약 조건과 임대인 요청사항을 미리 확인하면 필요한 작업을 정하는 데 도움이 됩니다.`,
+    `${city} 지역에서 철거가 필요한 경우 더세이브는 공간의 업종과 구조, 기존 시설물 및 원상복구 조건을 확인하고 현장에 필요한 철거 범위를 기준으로 상담을 진행합니다.`,
 
-    `${city} 폐업철거에서는 영업 종료 일정과 건물 인도 일정을 함께 고려해야 합니다. 철거 이후 필요한 원상복구까지 확인하면 전체 일정을 계획하기 수월합니다.`,
-
-    `폐업철거는 기존 인테리어를 제거하는 작업만으로 끝나지 않을 수 있습니다. ${city} 지역의 임대 공간이라면 계약 당시 반환 조건과 필요한 복구 항목을 함께 확인하는 것이 좋습니다.`,
-
-    `${city}에서 폐업을 준비하는 점포나 매장은 내부 철거뿐 아니라 간판 제거, 시설물 철거, 마감 복구 등이 필요한지도 함께 살펴봐야 합니다.`,
-  ] as const;
-
-  const seo5 = [
-    `${city} 철거비용과 철거견적은 단순히 면적으로 결정되는 것이 아니라 폐기물의 양과 종류, 건물 층수, 엘리베이터 사용 여부, 장비 진입 조건과 작업 난이도 등에 따라 달라질 수 있습니다.`,
-
-    `철거견적을 확인할 때에는 평당 가격만 비교하기보다 어떤 작업이 견적 범위에 포함되는지 살펴보는 것이 좋습니다. ${city} 현장의 철거 대상과 폐기물 처리, 원상복구 여부를 함께 확인해야 합니다.`,
-
-    `같은 규모의 공간이라도 시설물이 많거나 폐기물 반출이 어려운 경우 작업 방식과 필요한 인력이 달라질 수 있습니다. 따라서 ${city} 철거비용은 실제 현장 조건을 기준으로 확인하는 것이 좋습니다.`,
-
-    `${city} 철거견적은 천장과 바닥, 벽체, 집기, 설비 등 철거 대상의 양과 폐기물 발생량에 따라 달라질 수 있습니다. 현장 사진이나 방문 확인을 통해 작업 범위를 구체화하는 것이 좋습니다.`,
-
-    `철거비용을 알아볼 때에는 철거 공사뿐 아니라 폐기물 처리와 원상복구 같은 후속 작업이 필요한지도 함께 확인해야 합니다. ${city} 현장의 조건에 따라 전체 작업 범위는 달라질 수 있습니다.`,
-  ] as const;
-
-  const seo6 = [
-    `더세이브는 ${city} 지역에서 점포철거, 매장철거, 상가철거, 사무실철거, 폐업철거와 원상복구를 알아보는 경우 현장 조건과 필요한 작업 범위를 확인하여 상담을 진행합니다.`,
-
-    `${city}에서 철거를 준비하고 있다면 더세이브를 통해 공간의 업종과 면적, 철거 대상과 원상복구 필요 여부를 상담할 수 있습니다. 현장 상황에 필요한 작업 방향을 확인합니다.`,
-
-    `더세이브는 ${city}의 상가와 점포, 매장, 사무실 등 다양한 공간에서 필요한 철거 범위를 확인합니다. 부분철거부터 폐업 후 원상복구까지 현장 조건을 기준으로 상담합니다.`,
-
-    `${city}에서 상가나 매장 철거를 계획하고 있다면 현재 공간의 상태와 필요한 철거 내용을 알려주세요. 더세이브는 현장 조건을 살펴보고 필요한 작업 범위를 안내합니다.`,
-
-    `${city} 점포철거와 매장철거, 상가철거, 폐업철거 또는 원상복구가 필요한 경우 현장 사진과 공간의 업종, 면적 등을 기준으로 상담할 수 있습니다.`,
-  ] as const;
-
-  const processConsult = [
-    "지역과 업종, 공간의 면적과 필요한 철거 내용을 확인하여 기본 상담을 진행합니다.",
-    "철거가 필요한 공간의 위치와 업종, 규모, 예상 작업 범위를 먼저 확인합니다.",
-    "현장 주소와 공간 용도, 철거 목적과 원하는 작업 일정을 확인합니다.",
-    "점포나 매장의 현재 상태와 필요한 철거 항목, 작업 시기를 확인합니다.",
-    "철거할 공간의 기본 정보와 필요한 작업 내용을 확인하여 상담을 시작합니다.",
-  ] as const;
-
-  const processVisit = [
-    "현장의 내부 구조와 시설물, 폐기물 반출 동선 및 작업 환경을 확인합니다.",
-    "철거 대상과 유지해야 할 시설물, 장비 진입 가능 여부 등을 현장에서 살펴봅니다.",
-    "천장과 바닥, 벽체, 집기 등 실제 철거 대상과 작업 조건을 확인합니다.",
-    "출입 조건과 폐기물 이동 경로, 작업 공간 등을 확인하여 필요한 공정을 살펴봅니다.",
-    "현장을 확인하면서 철거 범위와 작업 난이도, 원상복구 필요 여부를 함께 살펴봅니다.",
-  ] as const;
-
-  const processEstimate = [
-    "확인된 철거 범위와 현장 조건을 기준으로 필요한 견적 내용을 안내합니다.",
-    "현장에서 확인한 작업 항목과 폐기물 처리 범위를 기준으로 견적을 안내합니다.",
-    "철거 대상과 작업 방식, 원상복구 여부를 기준으로 필요한 견적을 정리합니다.",
-    "현장 환경과 필요한 철거 공정을 반영하여 작업 범위와 견적을 안내합니다.",
-    "현장 확인 내용을 기준으로 필요한 작업 항목과 견적 내용을 안내합니다.",
-  ] as const;
-
-  const processWork = [
-    "협의된 작업 범위와 일정에 맞춰 철거 및 필요한 후속 작업을 진행합니다.",
-    "확정된 일정과 철거 대상에 따라 현장 작업을 순서대로 진행합니다.",
-    "사전에 확인한 공정과 작업 범위를 기준으로 현장 철거를 진행합니다.",
-    "협의된 철거 내용과 원상복구 범위에 맞춰 필요한 작업을 진행합니다.",
-    "현장 상황과 협의된 일정에 따라 철거 공정을 진행합니다.",
+    `더세이브는 ${city} 철거 상담 시 공간의 크기만 확인하는 것이 아니라 철거 대상 시설과 작업 환경, 폐기물 반출 조건 등을 함께 살펴보고 필요한 작업 방향을 안내합니다.`,
   ] as const;
 
   return {
-    seed,
-
     heroDescription: pick(
       heroDescriptions,
+      seed,
+      0
+    ),
+
+    guideTitle: pick(
+      guideTitles,
       seed,
       1
     ),
 
-    heroSubTitle: pick(
-      heroSubTitles,
+    introText: pick(
+      introTexts,
       seed,
       2
     ),
 
-    serviceIntro: pick(
-      serviceIntros,
-      seed,
-      3
-    ),
-
-    regionDescription: pick(
-      regionDescriptions,
-      seed,
-      4
-    ),
-
-    seo1: pick(
-      seo1,
-      seed,
-      5
-    ),
-
-    seo2: pick(
-      seo2,
-      seed,
-      6
-    ),
-
-    seo3: pick(
-      seo3,
-      seed,
-      7
-    ),
-
-    seo4: pick(
-      seo4,
-      seed,
-      8
-    ),
-
-    seo5: pick(
-      seo5,
-      seed,
-      9
-    ),
-
-    seo6: pick(
-      seo6,
-      seed,
-      10
-    ),
-
-    processConsult: pick(
-      processConsult,
-      seed,
-      11
-    ),
-
-    processVisit: pick(
-      processVisit,
-      seed,
-      12
-    ),
-
-    processEstimate: pick(
-      processEstimate,
-      seed,
-      13
-    ),
-
-    processWork: pick(
-      processWork,
-      seed,
-      14
-    ),
+    seoParagraphs: [
+      pick(seoParagraph1, seed, 3),
+      pick(seoParagraph2, seed, 5),
+      pick(seoParagraph3, seed, 7),
+      pick(seoParagraph4, seed, 9),
+      pick(seoParagraph5, seed, 11),
+    ],
   };
 }
 
@@ -295,64 +154,23 @@ function buildRegionalCopy(
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
-  const resolvedParams =
-    await params;
+  const resolvedParams = await params;
 
-  const city =
-    decodeRegion(
-      resolvedParams.city
-    );
+  const city = decodeRegion(
+    resolvedParams.city
+  );
 
-  if (
-    !isSupportedCity(city)
-  ) {
+  if (!isSupportedCity(city)) {
     return {
       title:
         "지역 철거업체 | 더세이브",
     };
   }
 
-  const copy =
-    buildRegionalCopy(city);
-
-  const metaTitles = [
-    `${city} 철거업체 | 점포·매장·상가·폐업철거`,
-    `${city} 철거 | 상가철거·점포철거·원상복구`,
-    `${city} 철거업체 | 매장·사무실·폐업철거`,
-    `${city} 철거업체 | 상가·점포 원상복구 상담`,
-    `${city} 철거 | 점포철거·매장철거 상담`,
-  ] as const;
-
-  const metaDescriptions = [
-    `${city} 철거업체를 알아보고 있다면 점포철거, 매장철거, 상가철거, 폐업철거, 부분철거와 원상복구에 필요한 현장 조건을 확인하세요.`,
-
-    `${city} 상가철거와 점포철거, 매장철거, 사무실철거 및 폐업 후 원상복구 관련 정보를 확인하세요. 현장 구조와 철거 범위에 따라 필요한 내용을 안내합니다.`,
-
-    `${city}에서 철거를 준비할 때 필요한 작업 범위와 폐기물 반출 조건, 원상복구 여부를 확인해보세요.`,
-
-    `${city} 점포·매장·상가 철거를 계획하고 있다면 내부 시설물과 현장 작업 조건을 먼저 살펴보는 것이 중요합니다. 폐업철거와 원상복구 정보도 확인하세요.`,
-
-    `${city} 철거업체를 찾고 있다면 상가, 점포, 매장, 사무실의 철거 대상과 원상복구 범위를 확인하세요.`,
-  ] as const;
-
-  const title =
-    pick(
-      metaTitles,
-      copy.seed,
-      21
-    );
-
-  const description =
-    pick(
-      metaDescriptions,
-      copy.seed,
-      22
-    );
-
   return {
-    title,
+    title: `${city} 철거업체 | 점포철거·매장철거·상가철거·폐업철거`,
 
-    description,
+    description: `${city} 철거업체 정보를 확인하세요. ${city} 점포철거업체, 매장철거업체, 상가철거업체, 폐업철거, 부분철거, 원상복구 및 지역별 철거 정보를 안내합니다.`,
 
     keywords: [
       `${city}철거`,
@@ -362,22 +180,16 @@ export async function generateMetadata({
       `${city}철거공사`,
       `${city}철거비용`,
       `${city}철거견적`,
-
       `${city}점포철거`,
       `${city}점포철거업체`,
-
       `${city}매장철거`,
       `${city}매장철거업체`,
-
       `${city}상가철거`,
       `${city}상가철거업체`,
-
       `${city}폐업철거`,
       `${city}폐업철거업체`,
-
       `${city}원상복구`,
       `${city}원상복구업체`,
-
       `${city}부분철거`,
       `${city}사무실철거`,
       `${city}음식점철거`,
@@ -390,236 +202,171 @@ export async function generateMetadata({
     },
 
     openGraph: {
-      title,
-      description,
+      title:
+        `${city} 철거업체 | 더세이브`,
+
+      description:
+        `${city} 점포철거, 매장철거, 상가철거, 폐업철거 및 원상복구 관련 정보를 확인하세요.`,
+
       type: "website",
     },
   };
 }
 
 /* =========================================================
-   페이지
+   PAGE
 ========================================================= */
 
 export default async function CityPage({
   params,
 }: PageProps) {
-  const resolvedParams =
-    await params;
+  const resolvedParams = await params;
 
-  const city =
-    decodeRegion(
-      resolvedParams.city
-    );
+  const city = decodeRegion(
+    resolvedParams.city
+  );
 
-  if (
-    !isSupportedCity(city)
-  ) {
+  if (!isSupportedCity(city)) {
     notFound();
   }
 
-  const childRegions =
-    getChildren([
-      city,
-    ]);
+  const childRegions = getChildren([
+    city,
+  ]);
 
-  if (
-    childRegions.length === 0
-  ) {
+  if (childRegions.length === 0) {
     notFound();
   }
 
-  const copy =
-    buildRegionalCopy(city);
+  const content =
+    buildCityContent(city);
 
   /* =======================================================
-     서비스 설명
+     지역별 서비스 설명
   ======================================================= */
+
+  const seed =
+    stableHash(`${city}-services`);
 
   const serviceDescriptions = {
     demolition: [
-      "상가와 점포, 매장, 사무실 등 공간의 구조와 기존 시설물을 확인하여 필요한 철거 범위를 살펴봅니다.",
+      `${city} 지역의 상가, 점포, 매장과 사무실 등 철거 대상 공간의 내부 구조를 확인하고 필요한 작업 범위를 살펴봅니다.`,
 
-      "천장과 벽체, 바닥, 가벽, 집기 등 내부 시설물의 상태를 확인하여 전체철거 또는 부분철거 범위를 정합니다.",
+      `${city} 현장의 업종과 내부 마감 상태, 기존 시설물을 확인하여 전체철거 또는 부분철거에 필요한 범위를 구분합니다.`,
 
-      "업종과 기존 인테리어 구성을 확인하고 실제 제거해야 하는 시설물을 기준으로 철거 작업 방향을 살펴봅니다.",
-
-      "현장의 공간 구조와 철거 대상, 폐기물 발생 범위를 확인하여 필요한 공정을 검토합니다.",
-
-      "철거 목적과 공간의 현재 상태를 확인하여 시설물 제거와 후속 작업에 필요한 범위를 살펴봅니다.",
+      `${city} 철거 현장의 공간 구조와 시설물 상태, 폐기물 반출 조건 등을 확인하여 필요한 작업 방향을 안내합니다.`,
     ],
 
     store: [
-      "점포 이전이나 폐업을 준비하는 경우 천장, 바닥, 가벽, 집기와 기존 설비 가운데 필요한 철거 대상을 확인합니다.",
+      `폐업이나 이전을 준비하는 ${city} 점포의 천장, 바닥, 가벽, 집기와 기존 시설 가운데 철거가 필요한 부분을 확인합니다.`,
 
-      "점포 내부 인테리어와 시설물을 살펴보고 영업 종료 또는 이전에 필요한 철거 범위를 정합니다.",
+      `${city} 점포의 현재 인테리어와 향후 사용 계획을 기준으로 유지할 시설과 철거할 시설을 구분합니다.`,
 
-      "점포의 업종과 현재 내부 상태를 기준으로 제거할 시설과 유지해야 할 시설을 구분하여 확인합니다.",
-
-      "임대 점포의 철거에서는 기존 시설물과 마감재 가운데 실제 철거해야 하는 부분을 먼저 살펴봅니다.",
-
-      "점포 정리를 준비할 때에는 내부 시설물과 집기, 간판 등의 처리 여부를 함께 확인하는 것이 좋습니다.",
+      `${city} 점포철거 시 내부 집기와 마감재, 간판 및 시설물 상태를 확인하여 필요한 철거 범위를 살펴봅니다.`,
     ],
 
     shop: [
-      "매장 내부의 진열시설과 카운터, 바닥, 벽면, 천장 등을 확인하여 필요한 철거 범위를 구분합니다.",
+      `${city} 매장의 내부 구조와 마감 상태를 살펴보고 전체철거 또는 일부 시설만 제거하는 부분철거 여부를 확인합니다.`,
 
-      "매장 리뉴얼이나 이전, 폐업 목적에 따라 전체철거 또는 부분철거에 필요한 공정을 살펴봅니다.",
+      `판매점과 음식점, 카페 등 ${city} 매장의 업종에 따라 다른 내부 시설을 확인하고 필요한 철거 범위를 구분합니다.`,
 
-      "매장의 기존 인테리어와 시설물 배치를 확인하여 철거할 부분과 유지할 부분을 구분합니다.",
-
-      "업종과 내부 마감 상태를 기준으로 매장에 필요한 철거 항목과 작업 범위를 확인합니다.",
-
-      "매장에 설치된 집기와 설비, 마감재 상태를 확인하고 실제 철거가 필요한 부분을 살펴봅니다.",
+      `${city} 매장철거는 기존 시설물과 집기, 천장 및 바닥 상태를 확인하여 현장에 맞는 작업 범위를 살펴봅니다.`,
     ],
 
     commercial: [
-      "상가 내부 시설물과 건물 출입 조건, 폐기물 반출 동선, 장비 진입 가능 여부를 함께 확인하여 철거 범위를 살펴봅니다.",
+      `${city} 상가 내부의 마감재와 시설물뿐 아니라 폐기물 반출 동선과 장비 접근 조건까지 함께 확인합니다.`,
 
-      "상가철거는 내부 공간뿐 아니라 작업 가능 시간과 공용부 이용 조건 등 건물 환경을 함께 확인하는 것이 중요합니다.",
+      `${city} 상가철거 시 건물의 작업 조건과 내부 시설, 폐기물 이동 환경 등을 살펴보고 필요한 철거 범위를 정합니다.`,
 
-      "상가의 기존 마감재와 설비를 확인하고 폐기물 이동 경로와 차량 접근성 등을 함께 살펴봅니다.",
-
-      "상가 내부의 철거 대상과 건물 작업 환경을 기준으로 필요한 공정과 진행 방법을 확인합니다.",
-
-      "상가 건물의 출입 환경과 내부 시설물, 폐기물 적재 조건 등을 확인하여 현장에 필요한 철거 방법을 검토합니다.",
+      `상가마다 구조와 작업 환경이 다르기 때문에 ${city} 현장의 시설물과 반출 조건을 기준으로 작업 내용을 확인합니다.`,
     ],
 
     closing: [
-      "폐업 일정과 임대차 종료 조건을 확인하여 매장 내부 철거와 필요한 원상복구 범위를 함께 살펴봅니다.",
+      `${city} 폐업철거를 준비할 경우 영업 종료 일정과 임대차 계약을 확인하고 철거와 원상복구가 필요한 범위를 살펴봅니다.`,
 
-      "영업 종료 후 공간 반환을 준비한다면 철거 대상 시설물과 임대인의 원상복구 요청사항을 확인해야 합니다.",
+      `폐업을 앞둔 ${city} 점포는 내부 철거뿐 아니라 임대인과 협의한 원상복구 조건까지 함께 확인하는 것이 중요합니다.`,
 
-      "폐업철거에서는 집기와 시설물 제거, 간판 철거, 내부 마감 철거와 원상복구 여부를 함께 확인하는 것이 좋습니다.",
-
-      "폐업 후 건물 인도 일정에 맞춰 필요한 철거 범위와 후속 복구 항목을 살펴봅니다.",
-
-      "점포 폐업을 준비할 때에는 내부 철거와 함께 임대 공간 반환에 필요한 원상복구 범위를 확인해야 합니다.",
+      `${city} 폐업 현장의 기존 시설을 확인하고 계약 조건에 따라 철거할 부분과 복구할 부분을 구분합니다.`,
     ],
 
-    restore: [
-      "임대차 계약과 임대인 요청사항을 확인하여 철거 이후 필요한 바닥, 벽면, 천장 등의 원상복구 범위를 살펴봅니다.",
+    restoration: [
+      `${city} 원상복구는 임대차 계약과 임대인의 요청 내용을 기준으로 철거 후 필요한 복구 항목을 확인합니다.`,
 
-      "공간을 반환해야 하는 상태에 따라 기존 시설물 철거와 별도로 필요한 복구 항목을 확인합니다.",
+      `${city} 상가의 계약 당시 상태와 현재 내부 구조를 비교하여 원상복구가 필요한 시설과 마감 범위를 살펴봅니다.`,
 
-      "원상복구는 철거 범위와 계약 내용을 함께 살펴보고 실제 복구가 필요한 부분을 정하는 것이 중요합니다.",
-
-      "철거 후 공간을 어떤 상태로 인도해야 하는지 확인하고 필요한 마감 및 복구 항목을 살펴봅니다.",
-
-      "계약 당시의 상태와 임대인 요청 내용을 기준으로 철거 이후 필요한 원상복구 작업을 확인합니다.",
+      `임대차 계약 종료를 준비하는 ${city} 현장의 철거 대상과 유지 시설을 확인하여 필요한 원상복구 범위를 구분합니다.`,
     ],
-  } as const;
+  };
 
   const services = [
     {
       number: "01",
-      title:
-        `${city} 철거업체`,
+      title: `${city} 철거업체`,
       description: pick(
         serviceDescriptions.demolition,
-        copy.seed,
-        31
+        seed,
+        0
       ),
     },
-
     {
       number: "02",
-      title:
-        `${city} 점포철거업체`,
+      title: `${city} 점포철거업체`,
       description: pick(
         serviceDescriptions.store,
-        copy.seed,
-        32
+        seed,
+        2
       ),
     },
-
     {
       number: "03",
-      title:
-        `${city} 매장철거업체`,
+      title: `${city} 매장철거업체`,
       description: pick(
         serviceDescriptions.shop,
-        copy.seed,
-        33
+        seed,
+        4
       ),
     },
-
     {
       number: "04",
-      title:
-        `${city} 상가철거업체`,
+      title: `${city} 상가철거업체`,
       description: pick(
         serviceDescriptions.commercial,
-        copy.seed,
-        34
+        seed,
+        6
       ),
     },
-
     {
       number: "05",
-      title:
-        `${city} 폐업철거업체`,
+      title: `${city} 폐업철거업체`,
       description: pick(
         serviceDescriptions.closing,
-        copy.seed,
-        35
+        seed,
+        8
       ),
     },
-
     {
       number: "06",
-      title:
-        `${city} 원상복구업체`,
+      title: `${city} 원상복구업체`,
       description: pick(
-        serviceDescriptions.restore,
-        copy.seed,
-        36
+        serviceDescriptions.restoration,
+        seed,
+        10
       ),
     },
-  ];
-
-  const process = [
-    [
-      "01",
-      "상담 접수",
-      copy.processConsult,
-    ],
-
-    [
-      "02",
-      "현장 확인",
-      copy.processVisit,
-    ],
-
-    [
-      "03",
-      "견적 안내",
-      copy.processEstimate,
-    ],
-
-    [
-      "04",
-      "철거 진행",
-      copy.processWork,
-    ],
   ];
 
   return (
     <main className="min-h-screen bg-[#080808] text-white">
 
-      {/* ===================================================
-          HEADER
-      =================================================== */}
+      {/* HEADER */}
 
       <header className="border-b border-white/15 bg-black">
-
         <div className="mx-auto flex min-h-[82px] max-w-7xl items-center justify-between px-5 sm:px-6">
 
           <Link
             href="/"
             className="flex items-end gap-2 font-black"
           >
-
             <span className="text-sm text-[#ffd600]">
               THE
             </span>
@@ -631,7 +378,6 @@ export default async function CityPage({
             <span className="mb-1 hidden text-[10px] tracking-[0.25em] text-neutral-300 sm:inline">
               DEMOLITION
             </span>
-
           </Link>
 
           <Link
@@ -642,15 +388,12 @@ export default async function CityPage({
           </Link>
 
         </div>
-
       </header>
 
-      {/* ===================================================
-          BREADCRUMB
-      =================================================== */}
+
+      {/* BREADCRUMB */}
 
       <section className="border-b border-white/15 bg-[#0c0c0c]">
-
         <div className="mx-auto flex max-w-7xl flex-wrap items-center px-5 py-5 text-sm font-medium text-neutral-200 sm:px-6 sm:text-base">
 
           <Link
@@ -669,12 +412,10 @@ export default async function CityPage({
           </strong>
 
         </div>
-
       </section>
 
-      {/* ===================================================
-          HERO
-      =================================================== */}
+
+      {/* HERO */}
 
       <section className="relative overflow-hidden border-b border-white/10">
 
@@ -695,13 +436,13 @@ export default async function CityPage({
               <br />
 
               <span className="text-[#ffd600]">
-                {copy.heroSubTitle}
+                점포·매장·상가철거
               </span>
 
             </h1>
 
             <p className="mt-8 max-w-2xl text-lg font-medium leading-9 text-neutral-100 sm:text-xl sm:leading-10">
-              {copy.heroDescription}
+              {content.heroDescription}
             </p>
 
             <div className="mt-10 flex flex-col gap-4 sm:flex-row">
@@ -724,6 +465,7 @@ export default async function CityPage({
 
           </div>
 
+
           <div className="relative hidden min-h-[430px] lg:block">
 
             <div className="absolute right-0 top-0 text-[210px] font-black leading-none text-transparent [-webkit-text-stroke:1px_rgba(255,214,0,.18)]">
@@ -737,13 +479,7 @@ export default async function CityPage({
               </p>
 
               <strong className="mt-28 block text-3xl font-black leading-tight text-white">
-
-                {city} 철거,
-
-                <br />
-
-                지역별로 확인하세요.
-
+                {content.guideTitle}
               </strong>
 
               <div className="mt-8 h-1 w-24 bg-[#ffd600]" />
@@ -756,9 +492,8 @@ export default async function CityPage({
 
       </section>
 
-      {/* ===================================================
-          SERVICE
-      =================================================== */}
+
+      {/* SERVICE */}
 
       <section className="bg-[#f4f4f1] py-20 text-black sm:py-24">
 
@@ -769,23 +504,17 @@ export default async function CityPage({
           </p>
 
           <h2 className="text-4xl font-black leading-tight tracking-[-0.05em] sm:text-5xl">
-
             {city} 철거 서비스
-
           </h2>
 
           <p className="mt-6 max-w-3xl text-lg font-medium leading-9 text-neutral-700">
-            {copy.serviceIntro}
+            {content.introText}
           </p>
 
           <div className="mt-14 grid gap-px bg-neutral-300 md:grid-cols-2 lg:grid-cols-3">
 
             {services.map(
-              (
-                service,
-                index
-              ) => {
-
+              (service, index) => {
                 const dark =
                   index === 1;
 
@@ -793,7 +522,6 @@ export default async function CityPage({
                   index === 4;
 
                 return (
-
                   <article
                     key={service.title}
                     className={`min-h-[330px] p-8 sm:p-9 ${
@@ -834,7 +562,6 @@ export default async function CityPage({
                     </p>
 
                   </article>
-
                 );
               }
             )}
@@ -845,15 +572,13 @@ export default async function CityPage({
 
       </section>
 
-      {/* ===================================================
-          무료 방문 견적
-      =================================================== */}
+
+      {/* 무료 방문 견적 */}
 
       <EstimateBanner />
 
-      {/* ===================================================
-          REGION LIST
-      =================================================== */}
+
+      {/* REGION LIST */}
 
       <section
         id="region-list"
@@ -877,8 +602,14 @@ export default async function CityPage({
           </h2>
 
           <p className="mt-6 max-w-3xl text-lg font-medium leading-9 text-neutral-100">
-            {copy.regionDescription}
+
+            {city}의 세부 지역을 선택하면
+            해당 지역의 점포철거, 매장철거,
+            상가철거, 폐업철거 및 원상복구
+            관련 내용을 확인할 수 있습니다.
+
           </p>
+
 
           <div className="mt-14 grid border-l border-t border-white/20 sm:grid-cols-2 lg:grid-cols-3">
 
@@ -901,11 +632,7 @@ export default async function CityPage({
                   <div className="mt-10 flex items-center justify-between gap-4">
 
                     <strong className="text-2xl font-black text-white transition group-hover:text-black sm:text-3xl">
-
-                      {region.name}
-                      {" "}
-                      철거업체
-
+                      {region.name} 철거업체
                     </strong>
 
                     <span className="text-2xl font-black text-[#ffd600] transition group-hover:text-black">
@@ -916,9 +643,7 @@ export default async function CityPage({
 
                   <p className="mt-5 text-base font-medium leading-7 text-neutral-300 transition group-hover:text-black/75">
 
-                    {region.name}
-                    {" "}
-                    점포철거 · 매장철거
+                    {region.name} 점포철거 · 매장철거
 
                     <br />
 
@@ -932,8 +657,7 @@ export default async function CityPage({
                       <p className="mt-5 text-sm font-bold text-[#ffd600] transition group-hover:text-black">
 
                         하위 지역{" "}
-                        {region.children.length}
-                        개 →
+                        {region.children.length}개 →
 
                       </p>
 
@@ -950,9 +674,8 @@ export default async function CityPage({
 
       </section>
 
-      {/* ===================================================
-          SEO INFORMATION
-      =================================================== */}
+
+      {/* SEO INFORMATION */}
 
       <section className="bg-[#171717] py-20 sm:py-24">
 
@@ -974,29 +697,17 @@ export default async function CityPage({
 
           <div className="mt-10 space-y-8 text-lg font-medium leading-9 text-neutral-100 sm:text-xl sm:leading-10">
 
-            <p>
-              {copy.seo1}
-            </p>
+            {content.seoParagraphs.map(
+              (paragraph, index) => (
 
-            <p>
-              {copy.seo2}
-            </p>
+                <p
+                  key={`${city}-seo-${index}`}
+                >
+                  {paragraph}
+                </p>
 
-            <p>
-              {copy.seo3}
-            </p>
-
-            <p>
-              {copy.seo4}
-            </p>
-
-            <p>
-              {copy.seo5}
-            </p>
-
-            <p>
-              {copy.seo6}
-            </p>
+              )
+            )}
 
           </div>
 
@@ -1004,9 +715,8 @@ export default async function CityPage({
 
       </section>
 
-      {/* ===================================================
-          PROCESS
-      =================================================== */}
+
+      {/* PROCESS */}
 
       <section className="bg-black py-20 sm:py-24">
 
@@ -1017,14 +727,36 @@ export default async function CityPage({
           </p>
 
           <h2 className="text-4xl font-black tracking-[-0.05em] text-white sm:text-5xl">
-
             {city} 철거 진행 절차
-
           </h2>
 
           <div className="mt-14 grid gap-px bg-white/15 md:grid-cols-4">
 
-            {process.map(
+            {[
+              [
+                "01",
+                "상담 내용 확인",
+                `${city} 현장의 위치와 업종, 공간 크기 및 필요한 철거 내용을 먼저 확인합니다.`,
+              ],
+
+              [
+                "02",
+                "작업 범위 확인",
+                "내부 구조와 기존 시설물을 살펴보고 철거할 부분과 유지할 부분을 구분합니다.",
+              ],
+
+              [
+                "03",
+                "현장 조건 검토",
+                "폐기물 반출 동선과 장비 접근 여부, 원상복구 항목 등 실제 작업 조건을 확인합니다.",
+              ],
+
+              [
+                "04",
+                "일정 협의 및 진행",
+                "확인된 작업 범위와 현장 조건을 기준으로 일정을 협의한 뒤 철거를 진행합니다.",
+              ],
+            ].map(
               ([
                 number,
                 title,
@@ -1059,9 +791,8 @@ export default async function CityPage({
 
       </section>
 
-      {/* ===================================================
-          CTA
-      =================================================== */}
+
+      {/* CTA */}
 
       <section className="bg-[#ffd600] py-16 text-black sm:py-20">
 
@@ -1075,22 +806,19 @@ export default async function CityPage({
 
             <h2 className="text-4xl font-black leading-tight tracking-[-0.05em] sm:text-5xl">
 
-              {city}
-              {" "}
-              철거 견적이
+              {city} 철거 견적이
 
               <br className="sm:hidden" />
 
-              {" "}
-              필요하신가요?
+              {" "}필요하신가요?
 
             </h2>
 
             <p className="mt-5 text-lg font-semibold leading-8 text-black/75">
 
-              {city} 지역의 업종과
-              공간 면적, 필요한 철거 내용을
-              알려주시면 상담을 진행할 수 있습니다.
+              현장 위치와 업종,
+              철거가 필요한 범위를
+              알려주시면 상담을 도와드립니다.
 
             </p>
 
@@ -1110,9 +838,8 @@ export default async function CityPage({
 
       </section>
 
-      {/* ===================================================
-          FOOTER
-      =================================================== */}
+
+      {/* FOOTER */}
 
       <footer className="border-t border-white/15 bg-black py-12">
 
